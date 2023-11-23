@@ -16,7 +16,8 @@ public class DashBoardFormController {
         stage.setScene(new Scene(FXMLLoader.load(getClass().getResource("../view/"+viewName+".fxml"))));
     }
 
-    public void customerBtnOnAction(ActionEvent actionEvent) {
+    public void customerBtnOnAction(ActionEvent actionEvent) throws IOException {
+        setUI("CustomerCRUDForm");
 
     }
 
