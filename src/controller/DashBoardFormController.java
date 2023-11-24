@@ -14,6 +14,8 @@ public class DashBoardFormController {
     public void setUI(String viewName) throws IOException {
         Stage stage= (Stage) dashBordFormContext.getScene().getWindow();
         stage.setScene(new Scene(FXMLLoader.load(getClass().getResource("../view/"+viewName+".fxml"))));
+        String title = viewName.split("F")[0];
+        stage.setTitle(title);
     }
 
     public void customerBtnOnAction(ActionEvent actionEvent) throws IOException {

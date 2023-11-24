@@ -111,7 +111,7 @@ public class CustomerCRUDFormController {
 
 
     public void navigateBackOnAction(ActionEvent actionEvent) throws IOException {
-        setUI("DashBoard");
+        setUI("DashBoardForm");
     }
 
     public void addCustomerOnAction(ActionEvent actionEvent) {
@@ -173,6 +173,8 @@ public class CustomerCRUDFormController {
     public void setUI(String viewName) throws IOException {
         Stage stage = (Stage) customerFormContext.getScene().getWindow();
         stage.setScene(new Scene(FXMLLoader.load(getClass().getResource("../view/" + viewName + ".fxml"))));
+        String title = viewName.split("F")[0];
+        stage.setTitle(title);
     }
 }
     

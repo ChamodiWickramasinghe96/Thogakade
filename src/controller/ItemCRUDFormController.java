@@ -152,14 +152,19 @@ public class ItemCRUDFormController {
     }
 
     public void navigateBackOnAction(ActionEvent actionEvent) throws IOException {
-        setUI("Dashboard");
+        setUI("DashBoardForm");
     }
 
     public void addNewOnAction(ActionEvent actionEvent) {
+        clearFields();
     }
+
+
 
     public void setUI(String viewName) throws IOException {
         Stage stage = (Stage) itemFormContext.getScene().getWindow();
         stage.setScene(new Scene(FXMLLoader.load(getClass().getResource("../view/" + viewName + ".fxml"))));
+        String title = viewName.split("F")[0];
+        stage.setTitle(title);
     }
 }
