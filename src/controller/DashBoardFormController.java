@@ -21,11 +21,13 @@ public class DashBoardFormController {
 
     }
 
-    public void itemBtnOnAction(ActionEvent actionEvent) {
-
+    public void itemBtnOnAction(ActionEvent actionEvent) throws IOException {
+        setUI("ItemCRUDForm");
     }
 
-    public void logOutBtnOnAction(ActionEvent actionEvent) {
-
+    public void logOutBtnOnAction(ActionEvent actionEvent) throws IOException {
+        setUI("SignInForm");
     }
+
+
 }
