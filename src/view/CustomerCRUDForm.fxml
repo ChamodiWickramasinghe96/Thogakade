@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="customerFormContext" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CustomerCRUDFormController">
+   <children>
+      <JFXTextField fx:id="tf_CustomerID" focusColor="#e67e22" labelFloat="true" layoutX="14.0" layoutY="66.0" prefHeight="25.0" prefWidth="89.0" promptText="Customer ID" />
+      <JFXTextField fx:id="tf_CustomerName" focusColor="#e67e22" labelFloat="true" layoutX="126.0" layoutY="66.0" prefHeight="25.0" prefWidth="102.0" promptText="Customer Name" />
+      <JFXTextField fx:id="tf_Address" focusColor="#e67e22" labelFloat="true" layoutX="249.0" layoutY="66.0" prefHeight="25.0" prefWidth="102.0" promptText="Address" />
+      <JFXTextField fx:id="tf_Salary" focusColor="#e67e22" labelFloat="true" layoutX="364.0" layoutY="66.0" prefHeight="25.0" prefWidth="102.0" promptText="Salary" />
+      <JFXButton fx:id="btn_AddCustomer" layoutX="486.0" layoutY="70.0" onAction="#addCustomerOnAction" prefHeight="25.0" prefWidth="103.0" style="-fx-background-color: #2ecc71;" text="+ Add" />
+      <TextField fx:id="tf_Search" layoutX="14.0" layoutY="115.0" prefHeight="25.0" prefWidth="453.0" promptText="Search here...." />
+      <JFXButton fx:id="btn_Update" layoutX="486.0" layoutY="115.0" onAction="#updateCustomerOnAction" prefHeight="25.0" prefWidth="102.0" style="-fx-background-color: #f1c40f;" text="~ Update" />
+      <ImageView fitHeight="31.0" fitWidth="37.0" layoutX="7.0" layoutY="2.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../asserts/icons/back.png" />
+         </image>
+      </ImageView>
+      <Button layoutX="4.0" layoutY="2.0" mnemonicParsing="false" onAction="#navigateBackOnAction" prefHeight="31.0" prefWidth="31.0" style="-fx-background-color: transeparent;" />
+      <JFXButton fx:id="btn_AddNew" layoutX="486.0" layoutY="12.0" onAction="#addNewOnAction" prefHeight="25.0" prefWidth="103.0" style="-fx-background-color: #3498db;" text="+ Add New" />
+      <TableView fx:id="tbl_Customer" layoutX="14.0" layoutY="159.0" prefHeight="225.0" prefWidth="572.0">
+        <columns>
+          <TableColumn fx:id="col_CustomerID" prefWidth="96.0" text="Customer ID" />
+          <TableColumn fx:id="col_CustomerName" prefWidth="136.0" text="Customer Name" />
+            <TableColumn fx:id="col_Address" prefWidth="133.0" text="Address" />
+            <TableColumn fx:id="col_Salary" prefWidth="115.0" text="Salary" />
+            <TableColumn fx:id="col_Option" prefWidth="91.0" text="Option" />
+        </columns>
+      </TableView>
+      <Label layoutX="237.0" layoutY="13.0" text="Manage Customers">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>
