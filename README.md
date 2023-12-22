@@ -1,6 +1,6 @@
 # Thogakade
 
-#Note that sample user name is 'Admin' and password is 'TestAdmin123@#'.
+#Note that sample user name is 'a' and password is 'a'.
 #This application developed by JAVA 8, so before run this application you need to make sure to install java 8 in your computer.
 #This application use MySQL database. To configure the database please execute below commands in MySQL.
 

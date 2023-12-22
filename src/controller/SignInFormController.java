@@ -26,7 +26,7 @@ public class SignInFormController {
     }
 
     public void signInOnAction(ActionEvent actionEvent) throws IOException {
-        if (tf_UserName.getText().equalsIgnoreCase("admin") && tf_Password.getText().equals("TestAdmin123@#")) {
+        if (tf_UserName.getText().equalsIgnoreCase("a") && tf_Password.getText().equals("a")) {
             setUI("DashBoardForm");
         }else {
             new Alert(Alert.AlertType.ERROR,"Please enter correct credentials !").show();

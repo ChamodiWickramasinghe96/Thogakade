@@ -1,10 +1,10 @@
 package controller;
 
+import bo.BoFactory;
+import bo.custom.ItemBo;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
-import dto.CustomerDto;
 import dto.ItemDto;
-import dto.tm.CustomerTm;
 import dto.tm.ItemTm;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,12 +15,13 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import modal.impl.ItemModalImpl;
+import dao.custom.impl.ItemDaoImpl;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
+import java.util.Optional;
 
 public class ItemCRUDFormController {
     public AnchorPane itemFormContext;
@@ -39,7 +40,9 @@ public class ItemCRUDFormController {
     public TableColumn col_Qty;
     public TableColumn col_Option;
 
-    ItemModalImpl itemModal = new ItemModalImpl();
+    //ItemDaoImpl itemModal = new ItemDaoImpl();
+    ItemBo bo = BoFactory.getInstance().getBo(BoFactory.BoTypes.ITEM);
+
 
     public void initialize(){
         col_ItemCode.setCellValueFactory(new PropertyValueFactory<>("code"));
@@ -69,7 +72,7 @@ public class ItemCRUDFormController {
     private void loadItemTable() {
         ObservableList<ItemTm> tmList = FXCollections.observableArrayList();
         try {
-            List<ItemDto> dtoList = itemModal.getAllItems();
+            List<ItemDto> dtoList = bo.getAllItems() ;
 
             for (ItemDto dto : dtoList) {
                 Button btn = new Button("Delete");
@@ -83,7 +86,28 @@ public class ItemCRUDFormController {
                 );
 
                 btn.setOnAction(actionEvent -> {
-                    deleteItem(item.getCode());
+                    Alert alert = new Alert(
+                            Alert.AlertType.CONFIRMATION,
+                            "Are you sure?",
+                            ButtonType.YES,
+                            ButtonType.NO
+                    );
+                    Optional<ButtonType> buttonType = alert.showAndWait();
+                    if (buttonType.get() == ButtonType.YES) {
+                        try {
+                            if (bo.deleteItem(dto.getCode())) {
+                                loadItemTable();
+                                new Alert(Alert.AlertType.CONFIRMATION,
+                                        "Item Deleted!..").show();
+                            } else {
+                                new Alert(Alert.AlertType.WARNING,
+                                        "Try Again!..").show();
+                            }
+                        } catch (Exception e) {
+                            new Alert(Alert.AlertType.ERROR,
+                                    "Error..").show();
+                        }
+                    }
                 });
 
                 tmList.add(item);
@@ -96,7 +120,7 @@ public class ItemCRUDFormController {
 
     private void deleteItem(String code) {
         try {
-            boolean isDeleted = itemModal.removeItem(code);
+            boolean isDeleted = bo.deleteItem(code);
             if (isDeleted) {
                 new Alert(Alert.AlertType.INFORMATION, "Item Deleted!").show();
                 loadItemTable();
@@ -110,9 +134,10 @@ public class ItemCRUDFormController {
     }
 
     public void addItemOnAction(ActionEvent actionEvent) {
+        ItemDto itemDto = new ItemDto(tf_ItemCode.getText(), tf_ItemDescription.getText()
+                , Double.parseDouble(tf_UnitPrice.getText()), Integer.parseInt(tf_Qty.getText()));
         try {
-            boolean isSaved = itemModal.addItem(new ItemDto(tf_ItemCode.getText(), tf_ItemDescription.getText()
-                    , Double.parseDouble(tf_UnitPrice.getText()), Integer.parseInt(tf_Qty.getText())));
+            boolean isSaved = bo.saveItem(itemDto);
             if (isSaved) {
                 new Alert(Alert.AlertType.INFORMATION, "Item Saved!").show();
                 loadItemTable();
@@ -135,12 +160,10 @@ public class ItemCRUDFormController {
     }
 
     public void updateItemOnAction(ActionEvent actionEvent) {
+        ItemDto itemDto = new ItemDto(tf_ItemCode.getText(), tf_ItemDescription.getText()
+                , Double.parseDouble(tf_UnitPrice.getText()), Integer.parseInt(tf_Qty.getText()));
         try {
-            boolean isUpdated = itemModal.updateItem(new ItemDto(tf_ItemCode.getText(),
-                    tf_ItemDescription.getText(),
-                    Double.parseDouble(tf_UnitPrice.getText()),
-                    Integer.parseInt(tf_Qty.getText()))
-            );
+            boolean isUpdated = bo.updateItem(itemDto);
             if (isUpdated){
                 new Alert(Alert.AlertType.INFORMATION,"Customer Updated!").show();
                 loadItemTable();

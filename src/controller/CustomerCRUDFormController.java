@@ -1,5 +1,7 @@
 package controller;
 
+import bo.BoFactory;
+import bo.custom.CustomerBo;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import dto.CustomerDto;
@@ -13,13 +15,13 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import modal.CustomerModal;
-import modal.impl.CustomerModalImpl;
+import dao.custom.impl.CustomerDaoImpl;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
+import java.util.Optional;
 
 public class CustomerCRUDFormController {
     public JFXTextField tf_CustomerID;
@@ -39,7 +41,9 @@ public class CustomerCRUDFormController {
     public TableColumn col_Option;
     public AnchorPane customerFormContext;
 
-    CustomerModalImpl customerModal = new CustomerModalImpl();
+    //CustomerDaoImpl customerModal = new CustomerDaoImpl();
+
+    CustomerBo bo = BoFactory.getInstance().getBo(BoFactory.BoTypes.CUSTOMER);
 
     public void initialize() {
         col_CustomerID.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -47,7 +51,9 @@ public class CustomerCRUDFormController {
         col_Address.setCellValueFactory(new PropertyValueFactory<>("address"));
         col_Salary.setCellValueFactory(new PropertyValueFactory<>("salary"));
         col_Option.setCellValueFactory(new PropertyValueFactory<>("btn"));
+
         loadCustomerTable();
+
         btn_Update.setDisable(true);
         tbl_Customer.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
             setData((CustomerTm) newValue);
@@ -69,9 +75,8 @@ public class CustomerCRUDFormController {
     private void loadCustomerTable() {
         ObservableList<CustomerTm> tmList = FXCollections.observableArrayList();
         try {
-            List<CustomerDto> dtoList = customerModal.getAllCustomers();
 
-            for (CustomerDto dto : dtoList) {
+            for (CustomerDto dto : bo.getAllCustomers()) {
                 Button btn = new Button("Delete");
 
                 CustomerTm c = new CustomerTm(
@@ -83,7 +88,29 @@ public class CustomerCRUDFormController {
                 );
 
                 btn.setOnAction(actionEvent -> {
-                    deleteCustomer(c.getId());
+
+                    Alert alert = new Alert(
+                            Alert.AlertType.CONFIRMATION,
+                            "Are you sure?",
+                            ButtonType.YES,
+                            ButtonType.NO
+                    );
+                    Optional<ButtonType> buttonType = alert.showAndWait();
+                    if (buttonType.get() == ButtonType.YES) {
+                        try {
+                            if (bo.deleteCustomer(dto.getId())) {
+                                loadCustomerTable();
+                                new Alert(Alert.AlertType.CONFIRMATION,
+                                        "Customer Deleted!..").show();
+                            } else {
+                                new Alert(Alert.AlertType.WARNING,
+                                        "Try Again!..").show();
+                            }
+                        } catch (Exception e) {
+                            new Alert(Alert.AlertType.ERROR,
+                                    "Error..").show();
+                        }
+                    }
                 });
 
                 tmList.add(c);
@@ -96,7 +123,7 @@ public class CustomerCRUDFormController {
 
     private void deleteCustomer(String id) {
         try {
-            boolean isDeleted = customerModal.removeCustomer(id);
+            boolean isDeleted = bo.deleteCustomer(id);
             if (isDeleted) {
                 new Alert(Alert.AlertType.INFORMATION, "Customer Deleted!").show();
                 loadCustomerTable();
@@ -115,9 +142,10 @@ public class CustomerCRUDFormController {
     }
 
     public void addCustomerOnAction(ActionEvent actionEvent) {
+        CustomerDto customerDto = new CustomerDto(tf_CustomerID.getText(), tf_CustomerName.getText()
+                , tf_Address.getText(), Double.parseDouble(tf_Salary.getText()));
         try {
-            boolean isSaved = customerModal.addCustomer(new CustomerDto(tf_CustomerID.getText(), tf_CustomerName.getText()
-                    , tf_Address.getText(), Double.parseDouble(tf_Salary.getText())));
+            boolean isSaved = bo.saveCustomer(customerDto);
             if (isSaved) {
                 new Alert(Alert.AlertType.INFORMATION, "Customer Saved!").show();
                 loadCustomerTable();
@@ -147,21 +175,61 @@ public class CustomerCRUDFormController {
     }
 
     public void searchCustomer() throws SQLException, ClassNotFoundException {
-        CustomerDto isAvailable = customerModal.searchCustomer(tf_Search.getText());
-        if (isAvailable != null) {
+        ObservableList<CustomerTm> tmList = FXCollections.observableArrayList();
+        try {
 
+            for (CustomerDto dto : bo.search(tf_Search.getText())) {
+                Button btn = new Button("Delete");
+
+                CustomerTm c = new CustomerTm(
+                        dto.getId(),
+                        dto.getName(),
+                        dto.getAddress(),
+                        dto.getSalary(),
+                        btn
+                );
+
+                btn.setOnAction(actionEvent -> {
+
+                    Alert alert = new Alert(
+                            Alert.AlertType.CONFIRMATION,
+                            "Are you sure?",
+                            ButtonType.YES,
+                            ButtonType.NO
+                    );
+                    Optional<ButtonType> buttonType = alert.showAndWait();
+                    if (buttonType.get() == ButtonType.YES) {
+                        try {
+                            if (bo.deleteCustomer(dto.getId())) {
+                                loadCustomerTable();
+                                new Alert(Alert.AlertType.CONFIRMATION,
+                                        "Doctor Deleted!..").show();
+                            } else {
+                                new Alert(Alert.AlertType.WARNING,
+                                        "Try Again!..").show();
+                            }
+                        } catch (Exception e) {
+                            new Alert(Alert.AlertType.ERROR,
+                                    "Error..").show();
+                        }
+                    }
+                });
+
+                tmList.add(c);
+            }
+            tbl_Customer.setItems(tmList);
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
     public void updateCustomerOnAction(ActionEvent actionEvent) {
+        CustomerDto customerDto = new CustomerDto(tf_CustomerID.getText(), tf_CustomerName.getText()
+                , tf_Address.getText(), Double.parseDouble(tf_Salary.getText()));
         try {
-            boolean isUpdated = customerModal.updateCustomer(new CustomerDto(tf_CustomerID.getText(),
-                    tf_CustomerName.getText(),
-                    tf_Address.getText(),
-                    Double.parseDouble(tf_Salary.getText())
-            ));
-            if (isUpdated){
-                new Alert(Alert.AlertType.INFORMATION,"Customer Updated!").show();
+            boolean isUpdated = bo.updateCustomer(customerDto);
+            if (isUpdated) {
+                new Alert(Alert.AlertType.INFORMATION, "Customer Updated!").show();
                 loadCustomerTable();
                 clearFields();
             }
